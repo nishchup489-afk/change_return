@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cash Register</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  </head>
+
+  <body
+    class="bg-slate-900 text-white min-h-screen flex items-center justify-center"
+  >
+    <main class="w-[420px] bg-slate-800 rounded-xl shadow-2xl p-6 space-y-6">
+      <h1 class="text-2xl font-bold text-center">Cash Register</h1>
+
+      <form action="/calculate" method="post" class="space-y-4">
+        <div>
+          <label class="text-sm text-gray-300">Total Cost</label>
+          <input
+            type="number"
+            step="0.01"
+            name="cost"
+            required
+            placeholder="Enter total cost"
+            class="w-full mt-1 p-3 rounded bg-slate-900 border border-slate-700 text-right text-lg"
+          />
+        </div>
+
+        <div>
+          <label class="text-sm text-gray-300">Cash Given</label>
+          <input
+            type="number"
+            step="0.01"
+            name="given"
+            class="screen w-full mt-1 p-3 rounded bg-black border border-slate-700 text-right text-xl font-bold"
+          />
+        </div>
+
+        <div class="grid grid-cols-3 gap-3">
+          <button
+            type="button"
+            value="100"
+            class="cash bg-green-600 hover:bg-green-700 p-3 rounded text-lg"
+          >
+            100$
+          </button>
+          <button
+            type="button"
+            value="50"
+            class="cash bg-green-600 hover:bg-green-700 p-3 rounded text-lg"
+          >
+            50$
+          </button>
+          <button
+            type="button"
+            value="20"
+            class="cash bg-green-600 hover:bg-green-700 p-3 rounded text-lg"
+          >
+            20$
+          </button>
+
+          <button
+            type="button"
+            value="10"
+            class="cash bg-green-600 hover:bg-green-700 p-3 rounded text-lg"
+          >
+            10$
+          </button>
+          <button
+            type="button"
+            value="5"
+            class="cash bg-green-600 hover:bg-green-700 p-3 rounded text-lg"
+          >
+            5$
+          </button>
+          <button
+            type="button"
+            value="1"
+            class="cash bg-green-600 hover:bg-green-700 p-3 rounded text-lg"
+          >
+            1$
+          </button>
+
+          <button
+            type="button"
+            value="0.25"
+            class="cash bg-blue-600 hover:bg-blue-700 p-3 rounded"
+          >
+            25¢
+          </button>
+          <button
+            type="button"
+            value="0.10"
+            class="cash bg-blue-600 hover:bg-blue-700 p-3 rounded"
+          >
+            10¢
+          </button>
+          <button
+            type="button"
+            value="0.05"
+            class="cash bg-blue-600 hover:bg-blue-700 p-3 rounded"
+          >
+            5¢
+          </button>
+        </div>
+
+        <div class="flex gap-3">
+          <button
+            type="button"
+            value="AC"
+            class="cash flex-1 bg-red-600 hover:bg-red-700 p-3 rounded font-semibold"
+          >
+            AC
+          </button>
+
+          <button
+            type="submit"
+            class="flex-1 bg-purple-600 hover:bg-purple-700 p-3 rounded font-semibold"
+          >
+            Calculate Change
+          </button>
+        </div>
+      </form>
+
+      <div class="bg-slate-900 p-4 rounded space-y-3">
+        {% if result %} {% if result['status'] == 'pending' %}
+
+        <h2 class="text-yellow-400 font-semibold">Payment Pending</h2>
+
+        <p>Given: <span class="font-bold">${{result['given']}}</span></p>
+        <p>Remaining: <span class="font-bold">${{result['amount']}}</span></p>
+
+        {% endif %} {% if result['status'] == 'success' %}
+
+        <h2 class="text-green-400 font-semibold">Change Due</h2>
+
+        <p>Given: <span class="font-bold">${{result['given']}}</span></p>
+        <p>Change Due: <span class="font-bold">${{result['change_total']}}</span></p>
+
+
+        <table class="w-full mt-3 text-left border border-slate-700">
+          <thead class="bg-slate-700">
+            <tr>
+              <th class="p-2">Coin</th>
+              <th class="p-2">Amount</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {% for coin, amount in result['change'].items() %}
+            <tr class="border-t border-slate-700">
+              <td class="p-2">{{coin}}</td>
+              <td class="p-2">{{amount}}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+
+        {% endif %} {% endif %}
+      </div>
+    </main>
+
+    <script>
+      const screen = document.querySelector(".screen");
+      const buttons = document.querySelectorAll(".cash");
+
+      buttons.forEach((btn) => {
+        btn.addEventListener("click", () => {
+          if (btn.value === "AC") {
+            screen.value = "";
+            return;
+          }
+
+          let current = parseFloat(screen.value) || 0;
+          let add = parseFloat(btn.value);
+
+          screen.value = (current + add).toFixed(2);
+        });
+      });
+    </script>
+  </body>
+</html>
